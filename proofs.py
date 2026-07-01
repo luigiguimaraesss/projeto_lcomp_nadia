@@ -107,16 +107,57 @@ proof_text_invalid_4 = """
 # Para usar ->e seria necessário possuir (p&q)
 # Apenas p sozinho não satisfaz o antecedente
 
+proof_text_implies_intro_valid = """
+1. p pre      
+2. p->p ->i 1,1  
+"""
+# ✅ VÁLIDA
+
+proof_text_implies_intro_valid_2 = """
+1. p pre
+2. q pre
+3. p copy 1
+4. q->p ->i 2,3
+"""
+# ✅ VÁLIDA: Prova que a partir de 'p', se assumirmos 'q', podemos introduzir 'q -> p'
+
+proof_text_invalid_implies_1 = """
+1. p pre
+2. q pre
+3. (p&q) &i 1,2
+4. q &e2 3
+5. q->p ->i 2,4
+"""
+# ❌ INVÁLIDA
+# A subprova começou na linha 2 (com 'q') e terminou na linha 4 (com 'q').
+# A regra ->i deveria gerar (q -> q), mas tentou gerar (q -> p).
+
+proof_text_invalid_implies_2 = """
+1. p pre
+2. q pre
+3. (p&q) &i 1,2
+4. q->r ->i 2,3
+"""
+# ❌ INVÁLIDA
+# A subprova inicia em 'q' (linha 2) e termina em '(p&q)' (linha 3).
+# O resultado correto deveria ser q -> (p&q). 
+# Tentar concluir q -> r quebra a validação da estrutura.
+
+proof_text_intro_valid_3 = """
+1. (p&q)->r pre
+2. p pre          
+3. q pre          
+4. (p&q) &i 2,3   
+5. r ->e 1,4      
+6. q->r ->i 3,5   
+7. p->(q->r) ->i 2,6 
+"""
+# ✅ VÁLIDA
 
 ALL_PROOFS = [
-    proof_text_1,
-    proof_text_2,
-    proof_text_3,
-    proof_text_4,
-    proof_text_invalid,
-    proof_text_5,
-    proof_text_6,
-    proof_text_invalid_2,
-    proof_text_invalid_3,
-    proof_text_invalid_4
+    proof_text_implies_intro_valid,
+    proof_text_implies_intro_valid_2,
+    proof_text_invalid_implies_1,  
+    proof_text_invalid_implies_2,
+    proof_text_intro_valid_3
 ]

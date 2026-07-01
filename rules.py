@@ -109,6 +109,35 @@ class ImplicationElimination(Rule):
             implication.left == premise
             and implication.right == line.formula
         )
+# ==========================================================
+# INTRODUÇÃO DA IMPLICAÇÃO (Dedução)
+# ==========================================================
+
+class ImplicationIntroduction(Rule):
+
+    def validate(self, line, proof):
+        # A regra precisa de exatamente duas referências:
+        # refs[0]: a linha da hipótese assumida (início da subprova)
+        # refs[1]: a linha da conclusão obtida dentro da subprova (fim da subprova)
+        if len(line.refs) < 2:
+            return False
+
+        hyp_line_num = line.refs[0]
+        conc_line_num = line.refs[1]
+
+        # Garante que as linhas referenciadas existem na prova
+        if hyp_line_num not in proof or conc_line_num not in proof:
+            return False
+
+        hyp_formula = proof[hyp_line_num].formula
+        conc_formula = proof[conc_line_num].formula
+
+        # O resultado esperado na linha atual deve ser: (hipótese -> conclusão)
+        expected = Implies(hyp_formula, conc_formula)
+
+        # Avalidamos se a fórmula construída é idêntica à da linha:
+        return line.formula == expected
+
 
 
 # ==========================================================
@@ -121,4 +150,5 @@ RULES = {
     '&e1': AndElimLeft(),
     '&e2': AndElimRight(),
     '->e': ImplicationElimination(),
+    '->i': ImplicationIntroduction(),
 }
